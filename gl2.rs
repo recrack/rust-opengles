@@ -365,6 +365,14 @@ pub type GLintptr = intptr_t;
 
 pub type GLsizeiptr = ssize_t;
 
+// GL info
+pub static GL_VENDOR: c_uint = 0x1F00;
+pub static GL_RENDERER: c_uint = 0x1F01;
+pub static GL_VERSION: c_uint = 0x1F02;
+pub static GL_EXTENSIONS: c_uint = 0x1F03;
+
+pub static GL_COLOR_BUFFER_BIT: c_uint = 0x00004000;
+
 
 // Helper functions
 
@@ -462,8 +470,9 @@ pub fn blend_func_separate(src_rgb: GLenum, dst_rgb: GLenum, src_alpha: GLenum, 
         glBlendFuncSeparate(src_rgb, dst_rgb, src_alpha, dst_alpha);
     }
 }
-
 // FIXME: There should be some type-safe wrapper for this...
+#[cfg(not(target_os="android"), not(target_os="macos"))]
+#[cfg(not(target_os="android"), not(mac_10_6))]
 #[fixed_stack_segment]
 pub fn buffer_data<T>(target: GLenum, data: &[T], usage: GLenum) {
     unsafe {
@@ -474,6 +483,18 @@ pub fn buffer_data<T>(target: GLenum, data: &[T], usage: GLenum) {
     }
 }
 
+// FIXME: There should be some type-safe wrapper for this...
+// FIXME: T is not working
+#[cfg(target_os="android")]
+#[fixed_stack_segment]
+pub fn buffer_data(target: GLenum, data: &[f32], usage: GLenum) {
+    unsafe {
+        glBufferData(target,
+                         (data.len() * size_of::<f32>()) as GLsizeiptr,
+                         to_ptr(data) as *GLvoid,
+                         usage);
+    }
+}
 // FIXME: As above
 // Note: offset is the element offset index, not byte offset
 #[fixed_stack_segment]
