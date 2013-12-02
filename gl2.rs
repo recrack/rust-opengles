@@ -373,6 +373,9 @@ pub static GL_EXTENSIONS: c_uint = 0x1F03;
 
 pub static GL_COLOR_BUFFER_BIT: c_uint = 0x00004000;
 
+// gl2ext
+pub type GLeglImageOES = *c_void;
+
 
 // Helper functions
 
@@ -1187,6 +1190,24 @@ pub fn viewport(x: GLint, y: GLint, width: GLsizei, height: GLsizei) {
     }
 }
 
+
+#[cfg(target_os="android")]
+#[fixed_stack_segment]
+pub fn EGLImageTargetTexture2DOES(target: GLenum, image: GLeglImageOES) {
+    unsafe {
+        return glEGLImageTargetTexture2DOES(target, image);
+    }
+
+}
+
+#[cfg(target_os="android")]
+#[fixed_stack_segment]
+pub fn EGLImageTargetRenderbufferStorageOES(target: GLenum, image: GLeglImageOES) {
+    unsafe {
+        return glEGLImageTargetRenderbufferStorageOES(target, image);
+    }
+}
+
 // Apple extensions
 #[cfg(target_os="macos")]
 pub mod apple {
@@ -1517,6 +1538,9 @@ pub fn glVertexAttribDivisor(indx: GLuint, divisor: GLuint);
 
 pub fn glViewport(x: GLint, y: GLint, width: GLsizei, height: GLsizei);
 
+#[cfg(target_os="android")]
+pub fn glEGLImageTargetTexture2DOES(target: GLenum, image: GLeglImageOES);
+pub fn glEGLImageTargetRenderbufferStorageOES(target: GLenum, image: GLeglImageOES);
 
 }
 
